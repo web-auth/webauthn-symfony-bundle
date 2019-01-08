@@ -34,7 +34,7 @@
         }
     },
     "suggest": {
-        "symfony/security-bundle": "For firewall features"
+        "web-auth/webauthn-symfony-bundle": "For firewall features"
     },
     "extra": {
         "branch-alias": {
