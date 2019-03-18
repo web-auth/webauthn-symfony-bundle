@@ -6,9 +6,6 @@ framework:
     secret: 'test'
     session:
         storage_id: 'session.storage.mock_file'
-    router:
-        resource: "%kernel.root_dir%/../config/routing.php"
-        strict_requirements: ~
     fragments:       ~
     http_method_override: true
 
