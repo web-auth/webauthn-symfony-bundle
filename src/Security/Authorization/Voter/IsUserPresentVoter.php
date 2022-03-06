@@ -2,36 +2,32 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Bundle\Security\Voter;
+namespace Webauthn\Bundle\Security\Authorization\Voter;
 
-use JetBrains\PhpStorm\Pure;
 use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 
-final class IsUserVerifiedVoter implements VoterInterface
+final class IsUserPresentVoter implements VoterInterface
 {
-    public const IS_USER_VERIFIED = 'IS_USER_VERIFIED';
+    public const IS_USER_PRESENT = 'IS_USER_PRESENT';
 
     /**
      * {@inheritdoc}
-     *
-     * @param mixed $subject
      */
-    #[Pure]
     public function vote(TokenInterface $token, $subject, array $attributes): int
     {
         $result = VoterInterface::ACCESS_ABSTAIN;
-        if (!$token instanceof WebauthnToken) {
+        if (! $token instanceof WebauthnToken) {
             return $result;
         }
 
         foreach ($attributes as $attribute) {
-            if (self::IS_USER_VERIFIED !== $attribute) {
+            if ($attribute !== self::IS_USER_PRESENT) {
                 continue;
             }
 
-            return $token->isUserVerified() ? VoterInterface::ACCESS_GRANTED : VoterInterface::ACCESS_DENIED;
+            return $token->isUserPresent() ? VoterInterface::ACCESS_GRANTED : VoterInterface::ACCESS_DENIED;
         }
 
         return $result;

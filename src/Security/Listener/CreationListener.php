@@ -2,7 +2,7 @@
 
 declare(strict_types=1);
 
-namespace Webauthn\Bundle\Security\Firewall;
+namespace Webauthn\Bundle\Security\Listener;
 
 use Assert\Assertion;
 use function count;
@@ -48,14 +48,35 @@ class CreationListener
 
     private string $providerKey;
 
-    /*
-     * @var string[]
+    /**
+     * @param mixed[] $options
      */
-    public function __construct(private HttpMessageFactoryInterface $httpMessageFactory, private SerializerInterface $serializer, private ValidatorInterface $validator, private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory, private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository, private PublicKeyCredentialUserEntityRepository $publicKeyUserEntityRepository, private PublicKeyCredentialLoader $publicKeyCredentialLoader, private AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator, private TokenStorageInterface $tokenStorage, private AuthenticationManagerInterface $authenticationManager, private SessionAuthenticationStrategyInterface $sessionStrategy, string $providerKey, private array $options, private AuthenticationSuccessHandlerInterface $authenticationSuccessHandler, private AuthenticationFailureHandlerInterface $authenticationFailureHandler, private CreationOptionsHandler $optionsHandler, private OptionsStorage $optionsStorage, ?LoggerInterface $logger = null, private ?EventDispatcherInterface $dispatcher = null, private array $securedRelyingPartyId = [])
-    {
+    public function __construct(
+        private HttpMessageFactoryInterface $httpMessageFactory,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator,
+        private PublicKeyCredentialCreationOptionsFactory $publicKeyCredentialCreationOptionsFactory,
+        private PublicKeyCredentialSourceRepository $publicKeyCredentialSourceRepository,
+        private PublicKeyCredentialUserEntityRepository $publicKeyUserEntityRepository,
+        private PublicKeyCredentialLoader $publicKeyCredentialLoader,
+        private AuthenticatorAttestationResponseValidator $authenticatorAttestationResponseValidator,
+        private TokenStorageInterface $tokenStorage,
+        private AuthenticationManagerInterface $authenticationManager,
+        private SessionAuthenticationStrategyInterface $sessionStrategy,
+        string $providerKey,
+        private array $options,
+        private AuthenticationSuccessHandlerInterface $authenticationSuccessHandler,
+        private AuthenticationFailureHandlerInterface $authenticationFailureHandler,
+        private CreationOptionsHandler $optionsHandler,
+        private OptionsStorage $optionsStorage,
+        ?LoggerInterface $logger = null,
+        private ?EventDispatcherInterface $dispatcher = null,
+        private array $securedRelyingPartyId = []
+    ) {
         Assertion::notEmpty($providerKey, '$providerKey must not be empty.');
         $this->providerKey = $providerKey;
         $this->logger = $logger ?? new NullLogger();
+        $this->tokenStorage = $tokenStorage;
     }
 
     public function processWithCreationOptions(RequestEvent $event): void
@@ -65,8 +86,12 @@ class CreationListener
             $content = $request->getContent();
             Assertion::string($content, 'Invalid data');
             $creationOptionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
-            $authenticatorSelection = null !== $creationOptionsRequest->authenticatorSelection ? AuthenticatorSelectionCriteria::createFromArray($creationOptionsRequest->authenticatorSelection) : null;
-            $extensions = null !== $creationOptionsRequest->extensions ? AuthenticationExtensionsClientInputs::createFromArray($creationOptionsRequest->extensions) : null;
+            $authenticatorSelection = $creationOptionsRequest->authenticatorSelection !== null ? AuthenticatorSelectionCriteria::createFromArray(
+                $creationOptionsRequest->authenticatorSelection
+            ) : null;
+            $extensions = $creationOptionsRequest->extensions !== null ? AuthenticationExtensionsClientInputs::createFromArray(
+                $creationOptionsRequest->extensions
+            ) : null;
             $userEntity = $this->publicKeyUserEntityRepository->findOneByUsername($creationOptionsRequest->username);
             Assertion::null($userEntity, 'Invalid username');
             $userEntity = $this->publicKeyUserEntityRepository->createUserEntity(
@@ -83,7 +108,11 @@ class CreationListener
                 $extensions
             );
             $response = $this->optionsHandler->onCreationOptions($publicKeyCredentialCreationOptions, $userEntity);
-            $this->optionsStorage->store($request, new StoredData($publicKeyCredentialCreationOptions, $userEntity), $response);
+            $this->optionsStorage->store(
+                $request,
+                new StoredData($publicKeyCredentialCreationOptions, $userEntity),
+                $response
+            );
         } catch (Exception $e) {
             $this->logger->error('Unable to process the creation option request');
             $response = $this->onAssertionFailure($request, new AuthenticationException($e->getMessage(), 0, $e));
@@ -112,7 +141,7 @@ class CreationListener
     private function onAssertionFailure(Request $request, AuthenticationException $failed): Response
     {
         $token = $this->tokenStorage->getToken();
-        if ($token instanceof WebauthnToken && $this->providerKey === $token->getProviderKey()) {
+        if ($token instanceof WebauthnToken && $this->providerKey === $token->getFirewallName()) {
             $this->tokenStorage->setToken(null);
         }
 
@@ -123,7 +152,7 @@ class CreationListener
     {
         $this->tokenStorage->setToken($token);
 
-        if (null !== $this->dispatcher) {
+        if ($this->dispatcher !== null) {
             $loginEvent = new InteractiveLoginEvent($request, $token);
             $this->dispatcher->dispatch($loginEvent);
         }
@@ -131,20 +160,23 @@ class CreationListener
         return $this->authenticationSuccessHandler->onAuthenticationSuccess($request, $token);
     }
 
-    private function getServerPublicKeyCredentialCreationOptionsRequest(string $content): ServerPublicKeyCredentialCreationOptionsRequest
-    {
+    private function getServerPublicKeyCredentialCreationOptionsRequest(
+        string $content
+    ): ServerPublicKeyCredentialCreationOptionsRequest {
         $data = $this->serializer->deserialize(
             $content,
             ServerPublicKeyCredentialCreationOptionsRequest::class,
             'json',
-            [AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true]
+            [
+                AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
+            ]
         );
         Assertion::isInstanceOf($data, ServerPublicKeyCredentialCreationOptionsRequest::class, 'Invalid data');
         $errors = $this->validator->validate($data);
         if (count($errors) > 0) {
             $messages = [];
             foreach ($errors as $error) {
-                $messages[] = $error->getPropertyPath().': '.$error->getMessage();
+                $messages[] = $error->getPropertyPath() . ': ' . $error->getMessage();
             }
             throw new RuntimeException(implode("\n", $messages));
         }
@@ -160,7 +192,7 @@ class CreationListener
         $assertion = trim($assertion);
         $publicKeyCredential = $this->publicKeyCredentialLoader->load($assertion);
         $response = $publicKeyCredential->getResponse();
-        if (!$response instanceof AuthenticatorAttestationResponse) {
+        if (! $response instanceof AuthenticatorAttestationResponse) {
             throw new AuthenticationException('Invalid assertion');
         }
 
@@ -189,12 +221,24 @@ class CreationListener
             $userEntity,
             $options,
             $publicKeyCredentialSource->getPublicKeyCredentialDescriptor(),
-            $response->getAttestationObject()->getAuthData()->isUserPresent(),
-            $response->getAttestationObject()->getAuthData()->isUserVerified(),
-            $response->getAttestationObject()->getAuthData()->getReservedForFutureUse1(),
-            $response->getAttestationObject()->getAuthData()->getReservedForFutureUse2(),
-            $response->getAttestationObject()->getAuthData()->getSignCount(),
-            $response->getAttestationObject()->getAuthData()->getExtensions(),
+            $response->getAttestationObject()
+                ->getAuthData()
+                ->isUserPresent(),
+            $response->getAttestationObject()
+                ->getAuthData()
+                ->isUserVerified(),
+            $response->getAttestationObject()
+                ->getAuthData()
+                ->getReservedForFutureUse1(),
+            $response->getAttestationObject()
+                ->getAuthData()
+                ->getReservedForFutureUse2(),
+            $response->getAttestationObject()
+                ->getAuthData()
+                ->getSignCount(),
+            $response->getAttestationObject()
+                ->getAuthData()
+                ->getExtensions(),
             $this->providerKey,
             []
         );
