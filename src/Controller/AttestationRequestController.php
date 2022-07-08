@@ -105,9 +105,6 @@ final class AttestationRequestController
                     $creationOptionsRequest->userVerification ?? AuthenticatorSelectionCriteria::USER_VERIFICATION_REQUIREMENT_PREFERRED
                 )
                 ->setResidentKey($creationOptionsRequest->residentKey)
-                ->setRequireResidentKey(
-                    $creationOptionsRequest->residentKey === AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_REQUIRED
-                )
                 ->setAuthenticatorAttachment($creationOptionsRequest->authenticatorAttachment)
             ;
         }

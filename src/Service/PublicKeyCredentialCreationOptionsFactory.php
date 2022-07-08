@@ -81,7 +81,6 @@ final class PublicKeyCredentialCreationOptionsFactory
     {
         return AuthenticatorSelectionCriteria::create()
             ->setAuthenticatorAttachment($profile['authenticator_selection_criteria']['attachment_mode'])
-            ->setRequireResidentKey($profile['authenticator_selection_criteria']['require_resident_key'])
             ->setUserVerification($profile['authenticator_selection_criteria']['user_verification'])
             ->setResidentKey($profile['authenticator_selection_criteria']['resident_key'])
         ;
