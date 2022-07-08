@@ -44,7 +44,7 @@ final class AdditionalPublicKeyCredentialCreationOptionsRequest
         AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED,
         AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_DISCOURAGED,
     ])]
-    public ?string $residentKey = AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED;
+    public string $residentKey = AuthenticatorSelectionCriteria::RESIDENT_KEY_REQUIREMENT_PREFERRED;
 
     #[Type(type: 'string')]
     #[NotBlank(allowNull: true)]
