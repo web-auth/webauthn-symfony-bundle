@@ -32,8 +32,8 @@ use Webauthn\Bundle\DependencyInjection\Compiler\DynamicRouteCompilerPass;
 use Webauthn\Bundle\DependencyInjection\Compiler\ExtensionOutputCheckerCompilerPass;
 use Webauthn\Bundle\Doctrine\Type as DbalType;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepository;
-use Webauthn\CertificateChainChecker\CertificateChainChecker;
 use Webauthn\Counter\CounterChecker;
+use Webauthn\MetadataService\CertificateChain\CertificateChainValidator;
 use Webauthn\MetadataService\MetadataStatementRepository;
 use Webauthn\MetadataService\StatusReportRepository;
 use Webauthn\PublicKeyCredentialSourceRepository;
@@ -259,7 +259,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
         }
         $container->setAlias(MetadataStatementRepository::class, $config['mds_repository']);
         $container->setAlias(StatusReportRepository::class, $config['status_report_repository']);
-        $container->setAlias(CertificateChainChecker::class, $config['certificate_chain_checker']);
+        $container->setAlias(CertificateChainValidator::class, $config['certificate_chain_checker']);
         $loader->load('metadata_statement_supports.php');
     }
 }
