@@ -26,8 +26,7 @@ class WebauthnServicesFactory
         $container
             ->setDefinition($firewallConfigId, new ChildDefinition(WebauthnFactory::FIREWALL_CONFIG_DEFINITION_ID))
             ->replaceArgument(0, $config)
-            ->replaceArgument(1, $firewallName)
-        ;
+            ->replaceArgument(1, $firewallName);
 
         return $firewallConfigId;
     }

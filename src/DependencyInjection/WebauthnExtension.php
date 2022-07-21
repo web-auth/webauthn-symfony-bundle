@@ -170,8 +170,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                     'path' => $creationConfig['options_path'],
                     'host' => $creationConfig['host'],
                 ])
-                ->addTag('controller.service_arguments')
-            ;
+                ->addTag('controller.service_arguments');
             $container->setDefinition($attestationRequestControllerId, $attestationRequestController);
 
             $attestationResponseControllerId = sprintf('webauthn.controller.creation.response.%s', $name);
@@ -213,8 +212,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                     'path' => $requestConfig['options_path'],
                     'host' => $requestConfig['host'],
                 ])
-                ->addTag('controller.service_arguments')
-            ;
+                ->addTag('controller.service_arguments');
             $container->setDefinition($assertionRequestControllerId, $assertionRequestController);
 
             $assertionResponseControllerId = sprintf('webauthn.controller.request.response.%s', $name);

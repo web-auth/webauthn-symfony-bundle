@@ -54,8 +54,7 @@ final class PublicKeyCredentialCreationOptionsFactory
                 )
                 ->setAttestation($attestationConveyance ?? $profile['attestation_conveyance'])
                 ->setExtensions($authenticationExtensionsClientInputs ?? $this->createExtensions($profile))
-                ->setTimeout($profile['timeout'])
-        ;
+                ->setTimeout($profile['timeout']);
         $this->eventDispatcher->dispatch(new PublicKeyCredentialCreationOptionsCreatedEvent($options));
 
         return $options;
@@ -82,8 +81,7 @@ final class PublicKeyCredentialCreationOptionsFactory
         return AuthenticatorSelectionCriteria::create()
             ->setAuthenticatorAttachment($profile['authenticator_selection_criteria']['attachment_mode'])
             ->setUserVerification($profile['authenticator_selection_criteria']['user_verification'])
-            ->setResidentKey($profile['authenticator_selection_criteria']['resident_key'])
-        ;
+            ->setResidentKey($profile['authenticator_selection_criteria']['resident_key']);
     }
 
     /**

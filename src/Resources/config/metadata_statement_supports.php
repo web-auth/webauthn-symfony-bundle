@@ -15,28 +15,21 @@ return static function (ContainerConfigurator $container): void {
     $container = $container->services()
         ->defaults()
         ->private()
-        ->autoconfigure()
-    ;
+        ->autoconfigure();
 
     $container
-        ->set(AppleAttestationStatementSupport::class)
-    ;
+        ->set(AppleAttestationStatementSupport::class);
     $container
-        ->set(TPMAttestationStatementSupport::class)
-    ;
+        ->set(TPMAttestationStatementSupport::class);
     $container
-        ->set(FidoU2FAttestationStatementSupport::class)
-    ;
+        ->set(FidoU2FAttestationStatementSupport::class);
     $container
-        ->set(AndroidKeyAttestationStatementSupport::class)
-    ;
+        ->set(AndroidKeyAttestationStatementSupport::class);
     $container
         ->set(PackedAttestationStatementSupport::class)
-        ->args([service('webauthn.cose.algorithm.manager')])
-    ;
+        ->args([service('webauthn.cose.algorithm.manager')]);
 
     $container
         ->set(PhpCertificateChainValidator::class)
-        ->args([service('webauthn.http_client'), service('webauthn.request_factory')])
-    ;
+        ->args([service('webauthn.http_client'), service('webauthn.request_factory')]);
 };
