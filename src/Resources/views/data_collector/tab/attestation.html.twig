@@ -17,9 +17,12 @@
                         <td>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
-                                <a class="btn btn-link text-small sf-toggle sf-toggle-off"
-                                   data-toggle-selector="#webauthn-pkcao-{{ id }}" data-toggle-alt-content="Hide JSON">Show
-                                    JSON</a>
+                                <a
+                                    class="btn btn-link text-small sf-toggle sf-toggle-off"
+                                    data-toggle-selector="#webauthn-pkcao-{{ id }}" data-toggle-alt-content="Hide JSON"
+                                >
+                                    Show JSON
+                                </a>
                             </div>
                             <div id="webauthn-pkcao-{{ id }}" class="context sf-toggle-content sf-toggle-hidden">
                                 <pre>{{ data.json }}</pre>
@@ -58,12 +61,18 @@
                         <td>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
-                                <a class="btn btn-link text-small sf-toggle sf-toggle-off"
-                                   data-toggle-selector="#webauthn-attestation-validation-succeeded-{{ id }}"
-                                   data-toggle-alt-content="Hide JSON">Show JSON</a>
+                                <a
+                                    class="btn btn-link text-small sf-toggle sf-toggle-off"
+                                    data-toggle-selector="#webauthn-attestation-validation-succeeded-{{ id }}"
+                                    data-toggle-alt-content="Hide JSON"
+                                >
+                                    Show JSON
+                                </a>
                             </div>
-                            <div id="webauthn-attestation-validation-succeeded-{{ id }}"
-                                 class="context sf-toggle-content sf-toggle-hidden">
+                            <div
+                                id="webauthn-attestation-validation-succeeded-{{ id }}"
+                                class="context sf-toggle-content sf-toggle-hidden"
+                            >
                                 <pre>{{ data.options_json }}</pre>
                             </div>
                         </td>
@@ -80,12 +89,18 @@
                         <td>
                             <span>{{ profiler_dump(data.options) }}</span>
                             <div class="text-small font-normal">
-                                <a class="btn btn-link text-small sf-toggle sf-toggle-off"
-                                   data-toggle-selector="#webauthn-attestation-validation-failed-{{ id }}"
-                                   data-toggle-alt-content="Hide JSON">Show JSON</a>
+                                <a
+                                    class="btn btn-link text-small sf-toggle sf-toggle-off"
+                                    data-toggle-selector="#webauthn-attestation-validation-failed-{{ id }}"
+                                    data-toggle-alt-content="Hide JSON"
+                                >
+                                    Show JSON
+                                </a>
                             </div>
-                            <div id="webauthn-attestation-validation-failed-{{ id }}"
-                                 class="context sf-toggle-content sf-toggle-hidden">
+                            <div
+                                id="webauthn-attestation-validation-failed-{{ id }}"
+                                class="context sf-toggle-content sf-toggle-hidden"
+                            >
                                 <pre>{{ data.options_json }}</pre>
                             </div>
                         </td>
