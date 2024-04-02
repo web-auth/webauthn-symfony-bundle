@@ -244,6 +244,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 null,
                 new Reference($creationCeremonyStepManagerId),
             ]);
+            $attestationResponseValidator->addTag(EventDispatcherSetterCompilerPass::TAG);
             $container->setDefinition($attestationResponseValidatorId, $attestationResponseValidator);
 
             $attestationResponseControllerId = sprintf('webauthn.controller.creation.response.%s', $name);
@@ -330,6 +331,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                 null,
                 new Reference($requestCeremonyStepManagerId),
             ]);
+            $assertionResponseValidator->addTag(EventDispatcherSetterCompilerPass::TAG);
             $container->setDefinition($assertionResponseValidatorId, $assertionResponseValidator);
 
             $assertionResponseControllerId = sprintf('webauthn.controller.request.response.%s', $name);

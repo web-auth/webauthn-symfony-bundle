@@ -10,6 +10,7 @@ use Symfony\Component\DependencyInjection\Definition;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AuthenticatorAssertionResponseValidator;
 use Webauthn\AuthenticatorAttestationResponseValidator;
+use Webauthn\Bundle\DependencyInjection\Compiler\EventDispatcherSetterCompilerPass;
 use Webauthn\CeremonyStep\CeremonyStepManager;
 use Webauthn\CeremonyStep\CeremonyStepManagerFactory;
 
@@ -56,7 +57,8 @@ class WebauthnServicesFactory
                 $authenticatorAssertionResponseValidatorId,
                 new Definition(AuthenticatorAssertionResponseValidator::class)
             )
-            ->setArguments([null, null, null, null, null, new Reference($ceremonyStepManagerId)]);
+            ->setArguments([null, null, null, null, null, new Reference($ceremonyStepManagerId)])
+            ->addTag(EventDispatcherSetterCompilerPass::TAG);
 
         return $authenticatorAssertionResponseValidatorId;
     }
@@ -82,7 +84,8 @@ class WebauthnServicesFactory
                 $authenticatorAttestationResponseValidatorId,
                 new Definition(AuthenticatorAttestationResponseValidator::class)
             )
-            ->setArguments([null, null, null, null, null, new Reference($ceremonyStepManagerId)]);
+            ->setArguments([null, null, null, null, null, new Reference($ceremonyStepManagerId)])
+            ->addTag(EventDispatcherSetterCompilerPass::TAG);
 
         return $authenticatorAttestationResponseValidatorId;
     }
