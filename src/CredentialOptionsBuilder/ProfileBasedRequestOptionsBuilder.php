@@ -73,7 +73,7 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
         $userEntity = $optionsRequest->username === null ? null : $this->userEntityRepository->findOneByUsername(
             $optionsRequest->username
         );
-        dump($this->fakeCredentialGenerator?->generate($request, $optionsRequest->username ?? ''));
+
         $allowedCredentials = match (true) {
             $userEntity === null && $optionsRequest->username === null, $userEntity === null && $optionsRequest->username !== null && $this->fakeCredentialGenerator === null => [],
             $userEntity === null && $optionsRequest->username !== null && $this->fakeCredentialGenerator !== null => $this->fakeCredentialGenerator->generate(
