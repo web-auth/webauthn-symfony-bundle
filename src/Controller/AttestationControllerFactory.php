@@ -72,13 +72,15 @@ final class AttestationControllerFactory
         OptionsStorage $optionStorage,
         CreationOptionsHandler $creationOptionsHandler,
         FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        bool $hideExistingExcludedCredentials = false
     ): AttestationRequestController {
         return new AttestationRequestController(
             $optionsBuilder,
             $userEntityGuesser,
             $optionStorage,
             $creationOptionsHandler,
-            $failureHandler
+            $failureHandler,
+            $hideExistingExcludedCredentials
         );
     }
 

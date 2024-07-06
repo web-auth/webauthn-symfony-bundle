@@ -354,6 +354,12 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('user_entity_guesser')
             ->isRequired()
             ->end()
+            ->scalarNode('hide_existing_credentials')
+                ->info(
+                    'In order to prevent username enumeration, the existing credentials can be hidden. This is highly recommended when the attestation ceremony is performed by anonymous users.'
+                )
+                ->defaultFalse()
+            ->end()
             ->scalarNode('options_storage')
             ->defaultValue(SessionStorage::class)
             ->info('Service responsible of the options/user entity storage during the ceremony')
