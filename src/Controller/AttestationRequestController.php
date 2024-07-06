@@ -24,6 +24,7 @@ final class AttestationRequestController
         private readonly OptionsStorage $optionsStorage,
         private readonly CreationOptionsHandler $creationOptionsHandler,
         private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        private readonly bool $hideExistingExcludedCredentials = false,
     ) {
     }
 
@@ -31,7 +32,11 @@ final class AttestationRequestController
     {
         try {
             $userEntity = $this->userEntityGuesser->findUserEntity($request);
-            $publicKeyCredentialCreationOptions = $this->extractor->getFromRequest($request, $userEntity);
+            $publicKeyCredentialCreationOptions = $this->extractor->getFromRequest(
+                $request,
+                $userEntity,
+                $this->hideExistingExcludedCredentials
+            );
 
             $response = $this->creationOptionsHandler->onCreationOptions(
                 $publicKeyCredentialCreationOptions,

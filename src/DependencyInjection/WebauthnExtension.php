@@ -215,6 +215,7 @@ final class WebauthnExtension extends Extension implements PrependExtensionInter
                     new Reference($creationConfig['options_storage']),
                     new Reference($creationConfig['options_handler']),
                     new Reference($creationConfig['failure_handler']),
+                    $creationConfig['hide_existing_credentials'] ?? false,
                 ])
                 ->addTag(DynamicRouteCompilerPass::TAG, [
                     'method' => $creationConfig['options_method'],

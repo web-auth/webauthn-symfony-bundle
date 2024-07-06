@@ -415,6 +415,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
                 new Reference($optionsStorageId),
                 new Reference($optionsHandlerId),
                 new Reference($failureHandlerId),
+                true,
             ]);
         $this->createControllerAndRoute(
             $container,

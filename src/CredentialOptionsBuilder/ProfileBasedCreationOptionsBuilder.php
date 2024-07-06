@@ -48,7 +48,8 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
 
     public function getFromRequest(
         Request $request,
-        PublicKeyCredentialUserEntity $userEntity
+        PublicKeyCredentialUserEntity $userEntity,
+        bool $hideExistingExcludedCredentials = false
     ): PublicKeyCredentialCreationOptions {
         $format = method_exists(
             $request,
@@ -57,7 +58,7 @@ final class ProfileBasedCreationOptionsBuilder implements PublicKeyCredentialCre
         $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
         $content = $request->getContent();
 
-        $excludedCredentials = $this->getCredentials($userEntity);
+        $excludedCredentials = $hideExistingExcludedCredentials === true ? [] : $this->getCredentials($userEntity);
         $optionsRequest = $this->getServerPublicKeyCredentialCreationOptionsRequest($content);
         $authenticatorSelectionData = $optionsRequest->authenticatorSelection;
         $authenticatorSelection = null;
