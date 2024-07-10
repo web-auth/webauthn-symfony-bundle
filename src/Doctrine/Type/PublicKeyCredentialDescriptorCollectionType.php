@@ -10,6 +10,9 @@ use InvalidArgumentException;
 use function is_string;
 use const JSON_THROW_ON_ERROR;
 
+/**
+ * @deprecated since 4.9.0 and will be removed in 5.0.0.
+ */
 final class PublicKeyCredentialDescriptorCollectionType extends Type
 {
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
@@ -37,9 +40,9 @@ final class PublicKeyCredentialDescriptorCollectionType extends Type
         return PublicKeyCredentialDescriptorCollection::createFromString($value);
     }
 
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getJsonTypeDeclarationSQL($column);
     }
 
     public function getName(): string

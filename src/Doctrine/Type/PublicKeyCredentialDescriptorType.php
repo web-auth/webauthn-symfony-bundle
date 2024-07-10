@@ -7,17 +7,18 @@ namespace Webauthn\Bundle\Doctrine\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Webauthn\PublicKeyCredentialDescriptor;
-use const JSON_THROW_ON_ERROR;
 
 final class PublicKeyCredentialDescriptorType extends Type
 {
+    use SerializerTrait;
+
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if ($value === null) {
+        if (! $value instanceof PublicKeyCredentialDescriptor) {
             return $value;
         }
 
-        return json_encode($value, JSON_THROW_ON_ERROR);
+        return $this->serialize($value);
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?PublicKeyCredentialDescriptor
@@ -26,12 +27,12 @@ final class PublicKeyCredentialDescriptorType extends Type
             return $value;
         }
 
-        return PublicKeyCredentialDescriptor::createFromString($value);
+        return $this->deserialize($value, PublicKeyCredentialDescriptor::class);
     }
 
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getJsonTypeDeclarationSQL($column);
     }
 
     public function getName(): string

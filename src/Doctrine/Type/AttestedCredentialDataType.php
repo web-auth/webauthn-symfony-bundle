@@ -7,17 +7,18 @@ namespace Webauthn\Bundle\Doctrine\Type;
 use Doctrine\DBAL\Platforms\AbstractPlatform;
 use Doctrine\DBAL\Types\Type;
 use Webauthn\AttestedCredentialData;
-use const JSON_THROW_ON_ERROR;
 
 final class AttestedCredentialDataType extends Type
 {
+    use SerializerTrait;
+
     public function convertToDatabaseValue($value, AbstractPlatform $platform): ?string
     {
-        if ($value === null) {
+        if (! $value instanceof AttestedCredentialData) {
             return $value;
         }
 
-        return json_encode($value, JSON_THROW_ON_ERROR);
+        return $this->serialize($value);
     }
 
     public function convertToPHPValue($value, AbstractPlatform $platform): ?AttestedCredentialData
@@ -25,14 +26,13 @@ final class AttestedCredentialDataType extends Type
         if ($value === null || $value instanceof AttestedCredentialData) {
             return $value;
         }
-        $json = json_decode((string) $value, true, flags: JSON_THROW_ON_ERROR);
 
-        return AttestedCredentialData::createFromArray($json);
+        return $this->deserialize($value, AttestedCredentialData::class);
     }
 
-    public function getSQLDeclaration(array $fieldDeclaration, AbstractPlatform $platform): string
+    public function getSQLDeclaration(array $column, AbstractPlatform $platform): string
     {
-        return $platform->getJsonTypeDeclarationSQL($fieldDeclaration);
+        return $platform->getJsonTypeDeclarationSQL($column);
     }
 
     public function getName(): string

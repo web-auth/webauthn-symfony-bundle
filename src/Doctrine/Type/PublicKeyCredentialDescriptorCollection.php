@@ -19,6 +19,7 @@ use const JSON_THROW_ON_ERROR;
 /**
  * @implements IteratorAggregate<PublicKeyCredentialDescriptor>
  * @internal
+ * @deprecated since 4.9.0 and will be removed in 5.0.0.
  */
 final class PublicKeyCredentialDescriptorCollection implements JsonSerializable, Countable, IteratorAggregate
 {
