@@ -9,7 +9,6 @@ use Symfony\Component\Config\Definition\Builder\ArrayNodeDefinition;
 use Symfony\Component\Config\Definition\Builder\TreeBuilder;
 use Symfony\Component\Config\Definition\ConfigurationInterface;
 use Symfony\Component\HttpFoundation\Request;
-use Symfony\Contracts\HttpClient\HttpClientInterface;
 use Webauthn\AuthenticatorSelectionCriteria;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialSourceRepository;
 use Webauthn\Bundle\Repository\DummyPublicKeyCredentialUserEntityRepository;
@@ -54,15 +53,6 @@ final class Configuration implements ConfigurationInterface
             ->end();
 
         $rootNode->children()
-            ->scalarNode('http_message_factory')
-                ->setDeprecated(
-                    'web-auth/webauthn-symfony-bundle',
-                    '4.5.0',
-                    'The class "http_message_factory" configuration option is deprecated since 4.5.0 and will be removed in 5.0.0. Not needed anymore.'
-                )
-                ->defaultNull()
-                ->info('Creates PSR-7 HTTP Request and Response instances from Symfony ones.')
-            ->end()
             ->scalarNode('fake_credential_generator')
                 ->defaultValue(SimpleFakeCredentialGenerator::class)
                 ->cannotBeEmpty()
@@ -77,10 +67,6 @@ final class Configuration implements ConfigurationInterface
             ->scalarNode('event_dispatcher')
                 ->defaultValue(EventDispatcherInterface::class)
                 ->info('PSR-14 Event Dispatcher service.')
-            ->end()
-            ->scalarNode('request_factory')
-            ->defaultNull()
-            ->info('PSR-17 Request Factory.')
             ->end()
             ->scalarNode('http_client')
             ->cannotBeEmpty()
@@ -100,11 +86,6 @@ final class Configuration implements ConfigurationInterface
             ->cannotBeEmpty()
             ->defaultValue(DummyPublicKeyCredentialUserEntityRepository::class)
             ->info('This repository is responsible of the user storage')
-            ->end()
-            ->scalarNode('token_binding_support_handler')
-            ->defaultNull()
-            ->setDeprecated('web-auth/webauthn-symfony-bundle', '4.3.0')
-            ->info('This handler will check the token binding header from the request. By default, it is ignored.')
             ->end()
             ->arrayNode('secured_rp_ids')
             ->treatFalseLike(null)
@@ -131,7 +112,6 @@ final class Configuration implements ConfigurationInterface
         $this->addRequestProfilesConfig($rootNode);
         $this->addMetadataConfig($rootNode);
         $this->addControllersConfig($rootNode);
-        $this->addAndroidSafetynetConfig($rootNode);
 
         return $treeBuilder;
     }
@@ -192,18 +172,6 @@ final class Configuration implements ConfigurationInterface
             })
             ->end()
             ->children()
-            ->scalarNode('attachment_mode')
-            ->setDeprecated('web-auth/webauthn-symfony-bundle', '4.7.0', 'Use "authenticator_attachment" instead')
-            ->defaultValue(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE)
-            ->validate()
-            ->ifNotInArray([
-                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE,
-                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_PLATFORM,
-                AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_CROSS_PLATFORM,
-            ])
-            ->thenInvalid($errorTemplate)
-            ->end()
-            ->end()
             ->scalarNode('authenticator_attachment')
             ->defaultValue(AuthenticatorSelectionCriteria::AUTHENTICATOR_ATTACHMENT_NO_PREFERENCE)
             ->validate()
@@ -468,43 +436,5 @@ final class Configuration implements ConfigurationInterface
             ->end()
             ->end()
             ->end();
-    }
-
-    /**
-     * @deprecated since 4.9.0 and will be removed in 5.0.0. Android SafetyNet is now deprecated.
-     */
-    private function addAndroidSafetynetConfig(ArrayNodeDefinition $rootNode): void
-    {
-        $rootNode->children()
-            ->arrayNode('android_safetynet')
-                ->setDeprecated('web-auth/webauthn-symfony-bundle', '4.9.0', 'Android SafetyNet is now deprecated.')
-                ->addDefaultsIfNotSet()
-                ->info('Additional configuration options for the Android SafetyNet attestation.')
-                ->children()
-                    ->integerNode('leeway')
-                        ->defaultValue(0)
-                        ->min(0)
-                        ->info(
-                            'Leeway for timestamp verification in response (in millisecond). At least 2000 msec are recommended.'
-                        )
-                    ->end()
-                    ->integerNode('max_age')
-                        ->min(0)
-                        ->defaultValue(60000)
-                        ->info('Maximum age of the response (in millisecond)')
-                    ->end()
-                    ->scalarNode('api_key')
-                        ->defaultNull()
-                        ->info(
-                            'If set, the application will verify the statements using Google API. See https://console.cloud.google.com/apis/library to get it.'
-                        )
-                    ->end()
-                    ->scalarNode('http_client')
-                        ->defaultValue(HttpClientInterface::class)
-                        ->info('Symfony client to use to send the request to Google API.')
-                    ->end()
-                ->end()
-            ->end()
-        ->end();
     }
 }

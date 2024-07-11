@@ -39,9 +39,4 @@ final class TrustPathDataType extends Type
     {
         return 'trust_path';
     }
-
-    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
-    {
-        return true;
-    }
 }

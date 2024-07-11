@@ -16,15 +16,15 @@ use Webauthn\Bundle\Security\Handler\FailureHandler;
 use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 
-final class AttestationRequestController
+final readonly class AttestationRequestController
 {
     public function __construct(
-        private readonly PublicKeyCredentialCreationOptionsBuilder $extractor,
-        private readonly UserEntityGuesser $userEntityGuesser,
-        private readonly OptionsStorage $optionsStorage,
-        private readonly CreationOptionsHandler $creationOptionsHandler,
-        private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        private readonly bool $hideExistingExcludedCredentials = false,
+        private PublicKeyCredentialCreationOptionsBuilder $extractor,
+        private UserEntityGuesser $userEntityGuesser,
+        private OptionsStorage $optionsStorage,
+        private CreationOptionsHandler $creationOptionsHandler,
+        private FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        private bool $hideExistingExcludedCredentials = false,
     ) {
     }
 

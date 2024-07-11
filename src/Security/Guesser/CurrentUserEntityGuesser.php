@@ -10,11 +10,11 @@ use Webauthn\Bundle\Exception\MissingUserEntityException;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\PublicKeyCredentialUserEntity;
 
-final class CurrentUserEntityGuesser implements UserEntityGuesser
+final readonly class CurrentUserEntityGuesser implements UserEntityGuesser
 {
     public function __construct(
-        private readonly TokenStorageInterface $tokenStorage,
-        private readonly PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository
+        private TokenStorageInterface $tokenStorage,
+        private PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository
     ) {
     }
 

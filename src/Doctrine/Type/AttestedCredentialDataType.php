@@ -39,9 +39,4 @@ final class AttestedCredentialDataType extends Type
     {
         return 'attested_credential_data';
     }
-
-    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
-    {
-        return true;
-    }
 }

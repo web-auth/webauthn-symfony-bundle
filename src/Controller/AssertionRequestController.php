@@ -16,14 +16,14 @@ use Webauthn\Bundle\Security\Handler\RequestOptionsHandler;
 use Webauthn\Bundle\Security\Storage\Item;
 use Webauthn\Bundle\Security\Storage\OptionsStorage;
 
-final class AssertionRequestController
+final readonly class AssertionRequestController
 {
     public function __construct(
-        private readonly PublicKeyCredentialRequestOptionsBuilder $optionsBuilder,
-        private readonly OptionsStorage $optionsStorage,
-        private readonly RequestOptionsHandler $optionsHandler,
-        private readonly FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
-        private readonly LoggerInterface $logger,
+        private PublicKeyCredentialRequestOptionsBuilder $optionsBuilder,
+        private OptionsStorage $optionsStorage,
+        private RequestOptionsHandler $optionsHandler,
+        private FailureHandler|AuthenticationFailureHandlerInterface $failureHandler,
+        private LoggerInterface $logger,
     ) {
     }
 

@@ -14,10 +14,10 @@ use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function is_array;
 
-final class DefaultRequestOptionsHandler implements RequestOptionsHandler
+final readonly class DefaultRequestOptionsHandler implements RequestOptionsHandler
 {
     public function __construct(
-        private readonly NormalizerInterface $normalizer
+        private NormalizerInterface $normalizer
     ) {
     }
 

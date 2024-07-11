@@ -40,7 +40,7 @@ use Webauthn\FakeCredentialGenerator;
 use function array_key_exists;
 use function assert;
 
-final class WebauthnFactory implements FirewallListenerFactoryInterface, AuthenticatorFactoryInterface
+final readonly class WebauthnFactory implements FirewallListenerFactoryInterface, AuthenticatorFactoryInterface
 {
     public const AUTHENTICATION_PROVIDER_KEY = 'webauthn';
 
@@ -84,34 +84,10 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
 
     public const FIREWALL_CONFIG_DEFINITION_ID = 'webauthn.security.firewall_config';
 
-    /**
-     * @deprecated This constant is not used anymore and will be removed in 5.0
-     * @infection-ignore-all
-     */
-    public const REQUEST_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.request_result_listener';
-
-    /**
-     * @deprecated This constant is not used anymore and will be removed in 5.0
-     * @infection-ignore-all
-     */
-    public const CREATION_RESULT_LISTENER_DEFINITION_ID = 'webauthn.security.authentication.creation_result_listener';
-
-    /**
-     * @deprecated This constant is not used anymore and will be removed in 5.0
-     * @infection-ignore-all
-     */
-    public const SUCCESS_HANDLER_ID_PREFIX = 'security.authentication.success_handler.webauthn.';
-
-    /**
-     * @deprecated This constant is not used anymore and will be removed in 5.0
-     * @infection-ignore-all
-     */
-    public const FAILURE_HANDLER_ID_PREFIX = 'security.authentication.failure_handler.webauthn.';
-
     private const PRIORITY = 0;
 
     public function __construct(
-        private readonly WebauthnServicesFactory $servicesFactory
+        private WebauthnServicesFactory $servicesFactory
     ) {
     }
 
@@ -225,14 +201,14 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     /**
      * Creates the authenticator service(s) for the provided configuration.
      *
-     * @return string|string[] The authenticator service ID(s) to be used by the firewall
+     * @return string The authenticator service ID to be used by the firewall
      */
     public function createAuthenticator(
         ContainerBuilder $container,
         string $firewallName,
         array $config,
         string $userProviderId
-    ): string|array {
+    ): string {
         $firewallConfigId = $this->servicesFactory->createWebauthnFirewallConfig($container, $firewallName, $config);
         $authenticatorAssertionResponseValidatorId = $this->servicesFactory->createAuthenticatorAssertionResponseValidator(
             $container,
@@ -264,6 +240,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     /**
      * Creates the firewall listener services for the provided configuration.
      *
+     * @param array<array-key, mixed> $config
      * @return string[] The listener service IDs to be used by the firewall
      */
     public function createListeners(ContainerBuilder $container, string $firewallName, array $config): array
@@ -298,7 +275,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     }
 
     /**
-     * @param mixed[] $config
+     * @param array<array-key, mixed> $config
      */
     private function createAssertionControllersAndRoutes(
         ContainerBuilder $container,
@@ -332,7 +309,7 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
     }
 
     /**
-     * @param mixed[] $config
+     * @param array<array-key, mixed> $config
      */
     private function createAttestationControllersAndRoutes(
         ContainerBuilder $container,
@@ -475,6 +452,9 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         $container->setDefinition($controllerId, $controller);
     }
 
+    /**
+     * @param array<array-key, mixed> $config
+     */
     private function getAssertionOptionsBuilderId(
         ContainerBuilder $container,
         string $firewallName,
@@ -500,6 +480,9 @@ final class WebauthnFactory implements FirewallListenerFactoryInterface, Authent
         return $optionsBuilderId;
     }
 
+    /**
+     * @param array<array-key, mixed> $config
+     */
     private function getAttestationOptionsBuilderId(
         ContainerBuilder $container,
         string $firewallName,

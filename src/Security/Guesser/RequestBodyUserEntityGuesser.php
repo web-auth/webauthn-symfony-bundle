@@ -5,23 +5,23 @@ declare(strict_types=1);
 namespace Webauthn\Bundle\Security\Guesser;
 
 use Symfony\Component\HttpFoundation\Request;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialCreationOptionsRequest;
 use Webauthn\Bundle\Exception\MissingUserEntityException;
 use Webauthn\Bundle\Repository\CanGenerateUserEntity;
-use Webauthn\Bundle\Repository\CanRegisterUserEntity;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
 use Webauthn\Exception\InvalidDataException;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function count;
 
-final class RequestBodyUserEntityGuesser implements UserEntityGuesser
+final readonly class RequestBodyUserEntityGuesser implements UserEntityGuesser
 {
     public function __construct(
-        private readonly SerializerInterface $serializer,
-        private readonly ValidatorInterface $validator,
-        private readonly PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator,
+        private PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository,
     ) {
     }
 
@@ -38,7 +38,7 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
         $dto = $this->serializer->deserialize(
             $content,
             ServerPublicKeyCredentialCreationOptionsRequest::class,
-            'json'
+            JsonEncoder::FORMAT
         );
         $errors = $this->validator->validate($dto);
 
@@ -62,20 +62,6 @@ final class RequestBodyUserEntityGuesser implements UserEntityGuesser
             return $this->userEntityRepository->generateUserEntity($dto->username, $dto->displayName);
         }
 
-        if (! $this->userEntityRepository instanceof CanRegisterUserEntity) {
-            throw MissingUserEntityException::create('Unable to find the user entity');
-        }
-        if ($dto->username === null || $dto->username === '') {
-            throw InvalidDataException::create($dto, 'The parameter "username" is missing or empty.');
-        }
-        if ($dto->displayName === null || $dto->displayName === '') {
-            throw InvalidDataException::create($dto, 'The parameter "displayName" is missing or empty.');
-        }
-
-        return PublicKeyCredentialUserEntity::create(
-            $dto->username,
-            $this->userEntityRepository->generateNextUserEntityId(),
-            $dto->displayName
-        );
+        throw MissingUserEntityException::create('Unable to find the user entity');
     }
 }

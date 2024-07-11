@@ -39,9 +39,4 @@ final class PublicKeyCredentialDescriptorType extends Type
     {
         return 'public_key_credential_descriptor';
     }
-
-    public function requiresSQLCommentHint(AbstractPlatform $platform): bool
-    {
-        return true;
-    }
 }

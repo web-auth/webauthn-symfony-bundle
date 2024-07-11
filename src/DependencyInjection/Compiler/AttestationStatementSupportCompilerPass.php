@@ -9,7 +9,7 @@ use Symfony\Component\DependencyInjection\ContainerBuilder;
 use Symfony\Component\DependencyInjection\Reference;
 use Webauthn\AttestationStatement\AttestationStatementSupportManager;
 
-final class AttestationStatementSupportCompilerPass implements CompilerPassInterface
+final readonly class AttestationStatementSupportCompilerPass implements CompilerPassInterface
 {
     public const TAG = 'webauthn_attestation_statement_support';
 

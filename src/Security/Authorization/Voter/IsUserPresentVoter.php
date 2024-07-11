@@ -8,7 +8,7 @@ use Symfony\Component\Security\Core\Authentication\Token\TokenInterface;
 use Symfony\Component\Security\Core\Authorization\Voter\VoterInterface;
 use Webauthn\Bundle\Security\Authentication\Token\WebauthnToken;
 
-final class IsUserPresentVoter implements VoterInterface
+final readonly class IsUserPresentVoter implements VoterInterface
 {
     public const IS_USER_PRESENT = 'IS_USER_PRESENT';
 

@@ -8,15 +8,15 @@ use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\Security\Http\HttpUtils;
 use Webauthn\Bundle\DependencyInjection\Factory\Security\WebauthnFactory;
 
-final class WebauthnFirewallConfig
+final readonly class WebauthnFirewallConfig
 {
     /**
      * @param array<string,mixed> $options
      */
     public function __construct(
-        private readonly array $options,
-        private readonly string $firewallName,
-        private readonly HttpUtils $httpUtils,
+        private array $options,
+        private string $firewallName,
+        private HttpUtils $httpUtils,
     ) {
     }
 

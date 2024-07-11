@@ -6,11 +6,12 @@ namespace Webauthn\Bundle\CredentialOptionsBuilder;
 
 use Symfony\Component\HttpFoundation\Request;
 use Symfony\Component\HttpKernel\Exception\BadRequestHttpException;
+use Symfony\Component\Serializer\Encoder\JsonEncoder;
 use Symfony\Component\Serializer\Normalizer\AbstractObjectNormalizer;
 use Symfony\Component\Serializer\SerializerInterface;
 use Symfony\Component\Validator\Validator\ValidatorInterface;
 use Webauthn\AuthenticationExtensions\AuthenticationExtension;
-use Webauthn\AuthenticationExtensions\AuthenticationExtensionsClientInputs;
+use Webauthn\AuthenticationExtensions\AuthenticationExtensions;
 use Webauthn\Bundle\Dto\ServerPublicKeyCredentialRequestOptionsRequest;
 use Webauthn\Bundle\Repository\PublicKeyCredentialSourceRepositoryInterface;
 use Webauthn\Bundle\Repository\PublicKeyCredentialUserEntityRepositoryInterface;
@@ -19,49 +20,34 @@ use Webauthn\FakeCredentialGenerator;
 use Webauthn\PublicKeyCredentialDescriptor;
 use Webauthn\PublicKeyCredentialRequestOptions;
 use Webauthn\PublicKeyCredentialSource;
-use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\PublicKeyCredentialUserEntity;
 use function count;
 use function is_array;
 
-final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequestOptionsBuilder
+final readonly class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequestOptionsBuilder
 {
     public function __construct(
-        private readonly SerializerInterface $serializer,
-        private readonly ValidatorInterface $validator,
-        private readonly PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository,
-        private readonly PublicKeyCredentialSourceRepository|PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
-        private readonly PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
-        private readonly string $profile,
-        private readonly null|FakeCredentialGenerator $fakeCredentialGenerator = null,
+        private SerializerInterface $serializer,
+        private ValidatorInterface $validator,
+        private PublicKeyCredentialUserEntityRepositoryInterface $userEntityRepository,
+        private PublicKeyCredentialSourceRepositoryInterface $credentialSourceRepository,
+        private PublicKeyCredentialRequestOptionsFactory $publicKeyCredentialRequestOptionsFactory,
+        private string $profile,
+        private null|FakeCredentialGenerator $fakeCredentialGenerator = null,
     ) {
-        if (! $this->credentialSourceRepository instanceof PublicKeyCredentialSourceRepositoryInterface) {
-            trigger_deprecation(
-                'web-auth/webauthn-symfony-bundle',
-                '4.6.0',
-                sprintf(
-                    'Since 4.6.0, the parameter "$credentialSourceRepository" expects an instance of "%s". Please implement that interface instead of "%s".',
-                    PublicKeyCredentialSourceRepositoryInterface::class,
-                    PublicKeyCredentialSourceRepository::class
-                )
-            );
-        }
     }
 
     public function getFromRequest(
         Request $request,
         ?PublicKeyCredentialUserEntity &$userEntity = null
     ): PublicKeyCredentialRequestOptions {
-        $format = method_exists(
-            $request,
-            'getContentTypeFormat'
-        ) ? $request->getContentTypeFormat() : $request->getContentType();
+        $format = $request->getContentTypeFormat();
         $format === 'json' || throw new BadRequestHttpException('Only JSON content type allowed');
         $content = $request->getContent();
         $optionsRequest = $this->getServerPublicKeyCredentialRequestOptionsRequest($content);
         $extensions = null;
         if (is_array($optionsRequest->extensions)) {
-            $extensions = AuthenticationExtensionsClientInputs::create(array_map(
+            $extensions = AuthenticationExtensions::create(array_map(
                 static fn (string $name, mixed $data): AuthenticationExtension => AuthenticationExtension::create(
                     $name,
                     $data
@@ -110,7 +96,7 @@ final class ProfileBasedRequestOptionsBuilder implements PublicKeyCredentialRequ
         $data = $this->serializer->deserialize(
             $content,
             ServerPublicKeyCredentialRequestOptionsRequest::class,
-            'json',
+            JsonEncoder::FORMAT,
             [
                 AbstractObjectNormalizer::DISABLE_TYPE_ENFORCEMENT => true,
             ]
