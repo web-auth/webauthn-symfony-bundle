@@ -40,16 +40,16 @@ use Webauthn\Denormalizer\AuthenticatorAttestationResponseDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorDataDenormalizer;
 use Webauthn\Denormalizer\AuthenticatorResponseDenormalizer;
 use Webauthn\Denormalizer\CollectedClientDataDenormalizer;
+use Webauthn\Denormalizer\ExtensionDescriptorDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialDescriptorNormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialOptionsDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialSourceDenormalizer;
 use Webauthn\Denormalizer\PublicKeyCredentialUserEntityDenormalizer;
+use Webauthn\Denormalizer\VerificationMethodANDCombinationsDenormalizer;
 use Webauthn\Denormalizer\WebauthnSerializerFactory;
 use Webauthn\FakeCredentialGenerator;
-use Webauthn\MetadataService\Denormalizer\ExtensionDescriptorDenormalizer;
 use Webauthn\MetadataService\Denormalizer\MetadataStatementSerializerFactory;
-use Webauthn\MetadataService\Denormalizer\VerificationMethodANDCombinationsDenormalizer;
 use Webauthn\PublicKeyCredentialLoader;
 use Webauthn\PublicKeyCredentialSourceRepository;
 use Webauthn\SimpleFakeCredentialGenerator;
@@ -286,7 +286,13 @@ return static function (ContainerConfigurator $container): void {
     $container->set(WebauthnSerializerFactory::class)
         ->args([service(AttestationStatementSupportManager::class)])
     ;
-    $container->set(MetadataStatementSerializerFactory::class);
+    $container->set(MetadataStatementSerializerFactory::class)
+        ->deprecate(
+            'web-auth/webauthn-symfony-bundle',
+            '4.9.0',
+            '%service_id% is deprecated since 4.9.0 and will be removed in 5.0.0'
+        )
+    ;
     $container->set(DefaultFailureHandler::class);
     $container->set(DefaultSuccessHandler::class);
 };
