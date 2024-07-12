@@ -23,7 +23,8 @@ final readonly class SessionStorage implements OptionsStorage
     public function store(Item $item, string|null $tag = null): void
     {
         $session = $this->requestStack->getSession();
-        $session->set(self::SESSION_PARAMETER, [
+        $key = sprintf('%s-%s', self::SESSION_PARAMETER, hash('xxh128', $item->getPublicKeyCredentialOptions()->challenge));
+        $session->set($key, [
             'options' => $item->getPublicKeyCredentialOptions(),
             'userEntity' => $item->getPublicKeyCredentialUserEntity(),
         ]);
