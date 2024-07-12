@@ -73,7 +73,9 @@ final readonly class AssertionResponseController
             );
             return $this->successHandler->onSuccess($request);
         } catch (Throwable $throwable) {
-            $this->logger->error($throwable->getMessage());
+            $this->logger->error('An error occurred during the assertion ceremony', [
+                'exception' => $throwable,
+            ]);
             if ($this->failureHandler instanceof AuthenticationFailureHandlerInterface) {
                 return $this->failureHandler->onAuthenticationFailure(
                     $request,
