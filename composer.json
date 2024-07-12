@@ -46,5 +46,8 @@
         "psr-4": {
             "Webauthn\\Bundle\\": "src/"
         }
+    },
+    "suggest": {
+        "symfony/security-bundle": "Symfony firewall using a JSON API (perfect for script applications)"
     }
 }
