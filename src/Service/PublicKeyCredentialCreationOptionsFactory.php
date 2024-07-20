@@ -123,11 +123,7 @@ final class PublicKeyCredentialCreationOptionsFactory implements CanDispatchEven
      */
     private function createRpEntity(array $profile): PublicKeyCredentialRpEntity
     {
-        return PublicKeyCredentialRpEntity::create(
-            $profile['rp']['name'],
-            $profile['rp']['id'],
-            $profile['rp']['icon']
-        );
+        return PublicKeyCredentialRpEntity::create($profile['rp']['name'], $profile['rp']['id']);
     }
 
     /**
